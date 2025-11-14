@@ -1,0 +1,14 @@
+streamlit
+yfinance
+pandas
+numpy
+matplotlib
+plotly
+joblib
+streamlit-chat
+feedparser
+scikit-learn
+requests
+langchain
+langchain-google-genai
+langchain-community
