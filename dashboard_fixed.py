@@ -8,26 +8,29 @@ from datetime import datetime
 
 # NSE Ticker names
 nse_tickers = {
-    "Reliance Industries": "RELIANCE.NS",
-    "Tata Consultancy Services": "TCS.NS",
-    "Infosys": "INFY.NS",
-    "HDFC Bank": "HDFCBANK.NS",
-    "ICICI Bank": "ICICIBANK.NS",
-    "Hindustan Unilever": "HINDUNILVR.NS",
-    "State Bank of India": "SBIN.NS",
-    "Kotak Mahindra Bank": "KOTAKBANK.NS",
-    "Larsen & Toubro": "LT.NS",
-    "Axis Bank": "AXISBANK.NS",
-    "Bharti Airtel": "BHARTIARTL.NS",
-    "ITC": "ITC.NS",
-    "Wipro": "WIPRO.NS",
-    "Maruti Suzuki": "MARUTI.NS",
-    "Mahindra & Mahindra": "M&M.NS",
-    "Tata Steel": "TATASTEEL.NS",
-    "HCL Technologies": "HCLTECH.NS",
-    "Bajaj Finance": "BAJFINANCE.NS",
-    "Zensar Technolgies Ltd.": "ZENSARTECH.NS",
-    "NTPC": "NTPC.NS"
+    "Wockhardt Ltd.": "WOCKPHARMA.NS",
+    "Zee Entertainment Enterprises Ltd.": "ZEEL.NS",
+    "V-Guard Industries Ltd.": "VGUARD.NS",
+    "Usha Martin Ltd.": "USHAMART.NS",
+    "Tejas Networks Ltd.": "TEJASNET.NS",
+    "Sundram Fasteners Ltd.": "SUNDRMFAST.NS",
+    "Rainbow Childrens Medicare Ltd.": "RAINBOW.NS",
+    "Ola Electric Mobility Ltd.": "OLAELEC.NS",
+    "Niva Bupa Health Insurance Company Ltd.": "NIVABUPA.NS",
+    "CreditAccess Grameen Ltd.": "CREDITACC.NS",
+    "Central Bank of India": "CENTRALBK.NS",
+    "Clean Science and Technology Ltd.": "CLEAN.NS",
+    "Aditya Birla Real Estate Ltd.": "ABREL.NS",
+    "ACME Solar Holdings Ltd.": "ACMESOLAR.NS",
+    "Ashok Leyland Ltd.": "ASHOKLEY.NS",
+    "BSE Ltd.": "BSE.NS",
+    "Dixon Technologies (India) Ltd.": "DIXON.NS",
+    "Fortis Healthcare Ltd.": "FORTIS.NS",
+    "Coforge Ltd.": "COFORGE.NS",
+    "Indus Towers Ltd.": "INDUSTOWER.NS",
+    "Jubilant Foodworks Ltd.":"JUBLFOOD.NS",
+    "Page Industries Ltd.":"PAGEIND.NS",
+    "Yes Bank Ltd.":"YESBANK.NS"
 }
 
 def fetch_stock_data(ticker, time, ticker_symbol):
@@ -77,7 +80,7 @@ def show_dashboard():
     ticker = st.selectbox("Select Stock Ticker", list(nse_tickers.keys()))
     ticker_symbol = nse_tickers[ticker]
 
-    time = st.selectbox("Select Time Period", ["1mo" , "2mo","3mo", "6mo" , "1y", "2y", "5y", "8y" , "10y", "max"] , index=6)
+    time = st.selectbox("Select Time Period", ["1mo", "2mo", "3mo"], index=0)
 
     data = fetch_stock_data(ticker, time, ticker_symbol)
 
