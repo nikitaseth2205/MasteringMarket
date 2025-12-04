@@ -1,37 +1,55 @@
 import streamlit as st
+from auth import show_login_page, is_authenticated, logout
 
 from dashboard_fixed import show_dashboard
 from news import show_news
 from chatbot import show_chatbot
 from game import show_game
 
-if 'active_tab' not in st.session_state:
-    st.session_state.active_tab = 'dashboard'
+# Initialize authentication state
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
 
-query_params = st.query_params
-if 'tab' in query_params and query_params['tab'] in ['dashboard', 'news', 'chatbot', 'game']:
-    st.session_state.active_tab = query_params['tab']
+# Check authentication
+if not is_authenticated():
+    show_login_page()
+else:
+    if 'active_tab' not in st.session_state:
+        st.session_state.active_tab = 'dashboard'
 
-st.set_page_config("MasteringMarket", layout="wide")
+    query_params = st.query_params
+    if 'tab' in query_params and query_params['tab'] in ['dashboard', 'news', 'chatbot', 'game']:
+        st.session_state.active_tab = query_params['tab']
 
-# Header navigation
-st.title("MasteringMarket")
-st.write("Welcome to MasteringMarket!")
-# st.image("images.jpg", width='stretch')
+    st.set_page_config("MasteringMarket", layout="wide")
 
-tab1, tab2, tab3, tab4 = st.tabs(["Stock Analysis Dashboard", "News and Current Affairs", "Chatbot", "Portfolio Game"])
+    # Header navigation with logout
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("MasteringMarket")
+        if 'user_name' in st.session_state:
+            st.write(f"Welcome back, {st.session_state.user_name}! 👋")
+    with col2:
+        st.write("")  # Spacing
+        st.write("")  # Spacing
+        if st.button("Logout", key="logout_button"):
+            logout()
+    
+    # st.image("images.jpg", width='stretch')
 
-with tab1:
-    show_dashboard()
+    tab1, tab2, tab3, tab4 = st.tabs(["Stock Analysis Dashboard", "News and Current Affairs", "Chatbot", "Portfolio Game"])
 
-with tab2:
-    show_news()
+    with tab1:
+        show_dashboard()
 
-with tab3:
-    show_chatbot()
+    with tab2:
+        show_news()
 
-with tab4:
-    show_game()
+    with tab3:
+        show_chatbot()
+
+    with tab4:
+        show_game()
 
 # Custom CSS for background and styling
 st.markdown(

@@ -80,7 +80,7 @@ def show_dashboard():
     ticker = st.selectbox("Select Stock Ticker", list(nse_tickers.keys()))
     ticker_symbol = nse_tickers[ticker]
 
-    time = st.selectbox("Select Time Period", ["1mo", "2mo", "3mo"], index=0)
+    time = st.selectbox("Select Time Period", ["1d", "5d", "1w", "2w", "3w", "1mo"], index=5)
 
     data = fetch_stock_data(ticker, time, ticker_symbol)
 
@@ -99,9 +99,12 @@ def show_dashboard():
         st.write(f"{data['Close'].iloc[-1]:.2f} INR")
     with col3:
         st.subheader("Price Change")
-        change = data['Close'].iloc[-1] - data['Close'].iloc[-2]
-        change_percentage = (change / data['Close'].iloc[-2]) * 100
-        st.write(f"{change:.2f} INR ({change_percentage:.2f}%)")
+        if len(data) > 1:
+            change = data['Close'].iloc[-1] - data['Close'].iloc[-2]
+            change_percentage = (change / data['Close'].iloc[-2]) * 100
+            st.write(f"{change:.2f} INR ({change_percentage:.2f}%)")
+        else:
+            st.write("N/A (Only one day of data)")
 
     col4 , col5, col6 = st.columns(3)
     with col4:
@@ -210,8 +213,12 @@ def show_dashboard():
     fig = go.Figure()
 
     # Calculate 50-day and 200-day Simple Moving Averages (SMA)
-    data['SMA_50'] = data['Close'].rolling(window=50).mean()
-    data['SMA_200'] = data['Close'].rolling(window=200).mean()
+    # Adjust window size based on available data
+    data_length = len(data)
+    window_50 = min(50, data_length)
+    window_200 = min(200, data_length)
+    data['SMA_50'] = data['Close'].rolling(window=window_50).mean()
+    data['SMA_200'] = data['Close'].rolling(window=window_200).mean()
 
     fig.add_trace(go.Scatter(x=data.index, y=data['Close'], mode='lines', name='Close Price', line=dict(color='gray')))
     fig.add_trace(go.Scatter(x=data.index, y=data['SMA_50'], mode='lines', name='50-Day SMA', line=dict(color='blue')))
@@ -302,22 +309,25 @@ def show_dashboard():
             st.write("This model predicts the stock price based on the historical data.")
         
             if st.button("Predict"):
-                Price_yes = data['Close'].iloc[-1]  # Last 10 days of closing prices
-                Price_2day_before = data['Close'].iloc[-2]
-                Price_3day_before = data['Close'].iloc[-3]
-                Price_4day_before = data['Close'].iloc[-4]
-                Price_5day_before = data['Close'].iloc[-5]
+                if len(data) < 5:
+                    st.error("Prediction requires at least 5 days of data. Please select a longer time period (e.g., 5d, 1w, or 1mo).")
+                else:
+                    Price_yes = data['Close'].iloc[-1]  # Last day closing price
+                    Price_2day_before = data['Close'].iloc[-2]
+                    Price_3day_before = data['Close'].iloc[-3]
+                    Price_4day_before = data['Close'].iloc[-4]
+                    Price_5day_before = data['Close'].iloc[-5]
 
-                new = pd.DataFrame({
-                    'Price_yes': [Price_yes],
-                    'Price_2day_before': [Price_2day_before],
-                    'Price_3day_before': [Price_3day_before],
-                    'Price_4day_before': [Price_4day_before],
-                    'Price_5day_before': [Price_5day_before]
-                })
-                    
-                prediction = model.predict(new)
-                st.subheader(f"The predicted stock price for {ticker} is: {prediction[0]:.2f} INR")
+                    new = pd.DataFrame({
+                        'Price_yes': [Price_yes],
+                        'Price_2day_before': [Price_2day_before],
+                        'Price_3day_before': [Price_3day_before],
+                        'Price_4day_before': [Price_4day_before],
+                        'Price_5day_before': [Price_5day_before]
+                    })
+                        
+                    prediction = model.predict(new)
+                    st.subheader(f"The predicted stock price for {ticker} is: {prediction[0]:.2f} INR")
 
                 st.write("-----------------------------------------------------------------------")
                 st.write("This prediction is based on the last 5 days of closing prices.")

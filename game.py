@@ -10,6 +10,7 @@ import re
 import json
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
+from dashboard_fixed import nse_tickers
 
 load_dotenv()
 
@@ -236,30 +237,7 @@ def show_game():
     This is a stock trading simulator where you start with ₹10,00,000 in cash. Buy and sell real NSE stocks (using live prices from Yahoo Finance) to build your portfolio. Scenarios temporarily change stock prices for fun challenges. Complete challenges to learn trading basics and climb the leaderboard based on your total portfolio value.
     """)
 
-
-    # NSE Ticker names (same as dashboard)
-    nse_tickers = {
-        "Reliance Industries": "RELIANCE.NS",
-        "Tata Consultancy Services": "TCS.NS",
-        "Infosys": "INFY.NS",
-        "HDFC Bank": "HDFCBANK.NS",
-        "ICICI Bank": "ICICIBANK.NS",
-        "Hindustan Unilever": "HINDUNILVR.NS",
-        "State Bank of India": "SBIN.NS",
-        "Kotak Mahindra Bank": "KOTAKBANK.NS",
-        "Larsen & Toubro": "LT.NS",
-        "Axis Bank": "AXISBANK.NS",
-        "Bharti Airtel": "BHARTIARTL.NS",
-        "ITC": "ITC.NS",
-        "Wipro": "WIPRO.NS",
-        "Maruti Suzuki": "MARUTI.NS",
-        "Mahindra & Mahindra": "M&M.NS",
-        "Tata Steel": "TATASTEEL.NS",
-        "HCL Technologies": "HCLTECH.NS",
-        "Bajaj Finance": "BAJFINANCE.NS",
-        "Zensar Technolgies Ltd.": "ZENSARTECH.NS",
-        "NTPC": "NTPC.NS"
-    }
+    # NSE Ticker names (same as dashboard) - imported from dashboard_fixed at top of file
     
     # Create a mapping of ticker symbols to company names for easier access
     stocks = {ticker: name for name, ticker in nse_tickers.items()}
@@ -413,12 +391,15 @@ def show_game():
                         st.error("Not enough shares.")
                 st.rerun()
 
-        # Stock Charts Section
+        # Stock Charts Section - Use the stock selected in trading section
         st.subheader("📊 Stock Charts")
-        chart_stock = st.selectbox("Select Stock for Chart", list(stocks.keys()), format_func=lambda x: f"{x} - {stocks[x]}", key="chart_stock")
+        st.info(f"Showing charts for: {stock_name}")
+        chart_stock = stock_symbol  # Use the stock selected in trading section
         chart_data = get_historical_data(chart_stock, period="3mo")
         
-        if not chart_data.empty and len(chart_data) > 0:
+        if chart_data.empty or len(chart_data) == 0:
+            st.warning(f"Chart data not available for {stock_name}. Please try again later.")
+        elif not chart_data.empty and len(chart_data) > 0:
             # Check if scenario is active for this stock
             scenario_impact = None
             if st.session_state.scenario_active and st.session_state.scenario:
