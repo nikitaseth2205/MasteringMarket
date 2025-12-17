@@ -130,12 +130,12 @@ def show_chatbot():
         with col1:
             stock1 = st.selectbox("Select First Stock", list(nse_tickers.keys()), key="stock1")
             ticker_symbol1 = nse_tickers[stock1]
-            time_period1 = st.selectbox("Time Period", ["1d", "5d", "1w", "2w", "3w", "1mo"], index=5, key="time1")
+            time_period1 = st.selectbox("Time Period", ["1d", "5d", "1mo"], index=2, key="time1")
         
         with col2:
             stock2 = st.selectbox("Select Second Stock", list(nse_tickers.keys()), key="stock2")
             ticker_symbol2 = nse_tickers[stock2]
-            time_period2 = st.selectbox("Time Period", ["1d", "5d", "1w", "2w", "3w", "1mo"], index=5, key="time2")
+            time_period2 = st.selectbox("Time Period", ["1d", "5d", "1mo"], index=2, key="time2")
         
         if st.button("Fetch Comparison Data"):
             with st.spinner("Fetching stock data..."):
