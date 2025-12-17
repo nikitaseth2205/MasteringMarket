@@ -130,7 +130,6 @@ Thumbs.db
 users.db
 
 # Model files
-*.pkl
 
 # Build files
 build/
