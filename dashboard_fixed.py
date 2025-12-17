@@ -80,7 +80,7 @@ def show_dashboard():
     ticker = st.selectbox("Select Stock Ticker", list(nse_tickers.keys()))
     ticker_symbol = nse_tickers[ticker]
 
-    time = st.selectbox("Select Time Period", ["1d", "5d", "1w", "2w", "3w", "1mo"], index=5)
+    time = st.selectbox("Select Time Period", ["1d", "5d", "1mo"], index=2)
 
     data = fetch_stock_data(ticker, time, ticker_symbol)
 
@@ -217,12 +217,19 @@ def show_dashboard():
     data_length = len(data)
     window_50 = min(50, data_length)
     window_200 = min(200, data_length)
-    data['SMA_50'] = data['Close'].rolling(window=window_50).mean()
-    data['SMA_200'] = data['Close'].rolling(window=window_200).mean()
 
-    fig.add_trace(go.Scatter(x=data.index, y=data['Close'], mode='lines', name='Close Price', line=dict(color='gray')))
-    fig.add_trace(go.Scatter(x=data.index, y=data['SMA_50'], mode='lines', name='50-Day SMA', line=dict(color='blue')))
-    fig.add_trace(go.Scatter(x=data.index, y=data['SMA_200'], mode='lines', name='200-Day SMA', line=dict(color='red')))
+    # Ensure the two SMAs use different window sizes; otherwise they overlap and look like one line
+    if window_50 == window_200 and window_200 > 1:
+        window_50 = max(1, window_200 // 2)
+
+    # Use min_periods=1 so SMA lines are visible even for short time ranges
+    data['SMA_50'] = data['Close'].rolling(window=window_50, min_periods=1).mean()
+    data['SMA_200'] = data['Close'].rolling(window=window_200, min_periods=1).mean()
+
+    # Use Date for x-axis to be consistent with other charts
+    fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], mode='lines', name='Close Price', line=dict(color='gray')))
+    fig.add_trace(go.Scatter(x=data['Date'], y=data['SMA_50'], mode='lines', name='50-Day SMA', line=dict(color='blue')))
+    fig.add_trace(go.Scatter(x=data['Date'], y=data['SMA_200'], mode='lines', name='200-Day SMA', line=dict(color='red')))
 
     # Update layout
     fig.update_layout(
